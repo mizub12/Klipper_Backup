@@ -1,0 +1,61 @@
+SET_TMC_CURRENT STEPPER=stepper_x CURRENT=1.8 HOLDCURRENT=1.0
+SET_TMC_CURRENT STEPPER=stepper_y CURRENT=1.8 HOLDCURRENT=1.0
+INIT_TMC STEPPER=stepper_x
+DUMP_TMC STEPPER=stepper_x
+
+STEPPER_BUZZ STEPPER=stepper_x
+FORCE_MOVE STEPPER=stepper_z3 DISTANCE=10 VELOCITY=100 ACCEL=500
+
+
+PID_CALIBRATE HEATER=extruder TARGET=170
+PID_CALIBRATE HEATER=heater_bed TARGET=60
+PID_CALIBRATE HEATER=<config_name> TARGET=<temperature>
+
+SET_SERVO SERVO=purge ANGLE=0
+
+
+quad_gantry_level
+
+PROBE_CALIBRATE
+
+PROBE_ACCURACY
+
+
+SAVE_CONFIG
+
+Spoolman systemd service has been installed and Spoolman is now starting.
+Spoolman will soon be reachable at http://192.168.4.25:7912
+Please note that the displayed IP address may be incorrect for your setup. If needed, replace it manually with the correct IP.
+You can start/restart/stop the service by running e.g. 'sudo systemctl stop Spoolman'
+You can disable the service from starting automatically by running 'sudo systemctl disable Spoolman'
+You can view the Spoolman logs by running 'sudo journalctl -u Spoolman'
+Spoolman has been installed successfully!
+If you want to connect to an external database, you can edit the .env file and restart the service.
+
+
+CANCEL_PRINT
+
+
+Resonance Compensation -> https://www.klipper3d.org/Resonance_Compensation.html
+SET_VELOCITY_LIMIT MINIMUM_CRUISE_RATIO=0
+SET_PRESSURE_ADVANCE ADVANCE=0
+SET_INPUT_SHAPER SHAPER_FREQ_X=0 SHAPER_FREQ_Y=0
+
+
+input Sharper:    #-> https://www.klipper3d.org/Measuring_Resonances.html?h=adxl
+
+[resonance_tester]
+  accel_chip: adxl345
+  probe_points: 180, 180, 40 
+
+
+-> SHAPER_CALIBRATE
+
+
+
+Test für Riemenspannung:
+
+-> TEST_RESONANCES AXIS=1,1 OUTPUT=raw_data
+-> TEST_RESONANCES AXIS=1,-1 OUTPUT=raw_data
+
+in SSH Panel -> ~/klipper/scripts/graph_accelerometer.py -c /tmp/raw_data_axis*.csv -o /tmp/resonances.png
